@@ -1,3 +1,6 @@
+### Questa repo è un backup del primo progetto per il corso di INTERACTIVE 3D GRAPHICS (università degli scorsi di Udine)
+- collaboratore: Daniele Passabì
+
 # Voxel Terrain Generation
 
 ![Immagine Principale](img/readme/main_scene_windmill_2.gif)
