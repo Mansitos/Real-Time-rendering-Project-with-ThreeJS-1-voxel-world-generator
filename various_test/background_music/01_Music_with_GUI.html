@@ -1,0 +1,229 @@
+<html>
+	<head>
+		<title>Wow, there's music!</title>
+
+		<!-- Bootstrap CSS - Principalmente per customizzare la GUI -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<style>
+		
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+		
+		canvas {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			border: none;
+			margin: 0;
+			z-index: -1;
+		}
+
+		#GUI_container {
+			width: 300px;
+			background-color: lightblue;
+			position: absolute;
+			right: 1vw;
+			top: 1vw;
+			border-radius: 1vw;
+		}
+
+		#GUI_container p {
+			padding-top: 0.5vw;
+			padding-left: 0.5vw;
+			font-size: 15px;
+		}
+	
+	</style>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/stats.min.js"></script>
+		<script src="../../lib/Coordinates.js"></script>
+		<script src="../../lib/OrbitControls.js"></script>
+	</head>
+	<body>
+
+		<!-- GUI -->
+		<div id="GUI_container">
+				<p>MUSIC 
+					<button class="btn btn-success active" id="musicOn" onclick="musicOn()">ON</button>
+					<button class="btn btn-success" id="musicOff" onclick="musicOff()">OFF</button>
+				</p>
+				<p>SHADOW QUALITY 
+					<button class="btn btn-success" onclick="worseShadow()">-</button>
+					<span id="shadowQuality"></span>
+					<button class="btn btn-success" onclick="betterShadow()">+</button>
+				</p>
+			</div>
+		
+			<!-- Script per la gestione delle funzioni della GUI -->
+			<script>
+				function musicOn() {
+					// la musica riprende
+					background_music.play();
+					// aggiorno la visualizzazione dei button
+					var buttonOff = document.getElementById("musicOff");
+					buttonOff.classList.remove("active");
+					var buttonOn = document.getElementById("musicOn");
+					buttonOn.classList.add("active");
+					console.log("Music ON")
+				}
+				function musicOff() {
+					// la musica si ferma
+					background_music.pause();
+					// aggiorno la visualizzazione dei button
+					var buttonOff = document.getElementById("musicOff");
+					buttonOff.classList.add("active");
+					var buttonOn = document.getElementById("musicOn");
+					buttonOn.classList.remove("active");
+					console.log("Music OFF")
+				}
+
+				function worseShadow() {
+					if (shadowQuality > 1) {
+						shadowQuality--;
+					}
+
+					// Trovare modo di aggiornare i valori!
+
+					// Aggiorno il valore nella GUI
+					document.getElementById('shadowQuality').innerHTML = shadowQuality;
+				}
+
+				function betterShadow() {
+					if (shadowQuality < 5) {
+						shadowQuality++;
+					}
+
+					// Trovare modo di aggiornare i valori!
+
+					// Aggiorno il valore nella GUI
+					document.getElementById('shadowQuality').innerHTML = shadowQuality;
+				}
+			</script>
+
+		<script>
+		
+		var scene, camera, renderer, controls, stats;
+
+		var background_music;
+
+		// Creo la variabile per la gestione della qualita delle ombre ed aggiungo il suo valore iniziale alla GUI
+		var shadowQuality = 1;
+		document.getElementById('shadowQuality').innerHTML = shadowQuality;
+		
+		function Start() {
+			scene = new THREE.Scene();
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			renderer = new THREE.WebGLRenderer( {antialias: true} );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor( 0xf0f0f0 );
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.gammaInput = true;
+			renderer.gammaOutput = true;
+			renderer.shadowMap.enabled = true;
+			document.body.appendChild( renderer.domElement );
+			
+			camera.position.set(10,8,8);
+			camera.lookAt( new THREE.Vector3(0,0,0));
+			
+			// MINECRAFT CUBE 
+			var geometry = new THREE.BoxGeometry(1,1,1);
+			var texture = THREE.ImageUtils.loadTexture('../../textures/11635.jpg');
+			var material = new THREE.MeshPhongMaterial( { map: texture } );
+			var cube = new THREE.Mesh( geometry, material );
+			cube.castShadow = true;
+			cube.receiveShadow = true;
+			
+			scene.add( cube );
+			// end of cube
+
+			hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
+			hemiLight.color.setHSL( 0.6, 1, 0.6 );
+			hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+			hemiLight.position.set( 0, 500, 0 );
+			scene.add( hemiLight );
+
+			dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
+			dirLight.color.setHSL( 0.1, 1, 0.95 );
+			dirLight.position.set( -1, 1.75, 1 );
+			dirLight.position.multiplyScalar( 50 );
+			scene.add( dirLight );
+			dirLight.castShadow = true;
+			dirLight.shadow.mapSize.width = 2048 * shadowQuality;
+			dirLight.shadow.mapSize.height = 2048 * shadowQuality;
+
+			var d = 30;
+			dirLight.shadow.camera.left = - d;
+			dirLight.shadow.camera.right = d;
+			dirLight.shadow.camera.top = d;
+			dirLight.shadow.camera.bottom = - d;
+
+
+			// GROUND
+			var groundGeo = new THREE.PlaneBufferGeometry( 10000, 10000 );
+			var groundMat = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0x050505 } );
+			groundMat.color.setHSL( 0.095, 1, 0.75 );
+			var ground = new THREE.Mesh( groundGeo, groundMat );
+			ground.position.y = -0.5;
+			ground.rotation.x = -Math.PI/2;
+			scene.add( ground );
+			ground.receiveShadow = true;
+			
+			stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '1vw';
+			stats.domElement.style.left = '1vw';
+			document.body.appendChild( stats.domElement );
+			
+			// uncomment if you need to draw coordinate axes when building the scene
+			//Coordinates.drawAllAxes();
+
+			////////////
+			// MUSIC //
+			//////////
+
+			// create an AudioListener and add it to the camera
+			var listener = new THREE.AudioListener();
+			camera.add( listener );
+
+			// create a global audio source
+			background_music = new THREE.Audio( listener );
+
+			// load a background_music and set it as the Audio object's buffer
+			var audioLoader = new THREE.AudioLoader();
+			audioLoader.load( '../../sounds/Relaxing_Background_Music.mp3', function( buffer ) {
+				background_music.setBuffer( buffer );
+				background_music.setLoop( true );
+				background_music.setVolume( 0.5 );
+				background_music.play();
+			});
+		
+			controls = new THREE.OrbitControls( camera );
+			controls.addEventListener( 'change', Render );
+		
+		}
+
+		function Update() {
+			requestAnimationFrame( Update );
+			controls.update();
+			stats.update();
+			Render();
+		}
+		
+		function Render() {
+			
+			renderer.render(scene, camera);
+		}
+		
+		Start();
+		Update();
+			
+		</script>
+
+	</body>
+</html>

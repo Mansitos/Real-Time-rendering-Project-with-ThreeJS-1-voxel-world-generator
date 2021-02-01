@@ -1,0 +1,85 @@
+body {
+    font-family: Monospace;
+    background-color: #f0f0f0;
+    margin: 0px;
+    overflow: hidden;
+}
+
+canvas { 
+    width: 100%; 
+    height: 100%;
+}
+
+/* Contenitore esterno */
+#GUI_container {
+    width: 330px;
+    background-color: #122d49;
+    position: absolute;
+    right: 1vw;
+    top: 1vw;
+    border: 4px solid #121736;
+    color: #12fcfc;
+    border-top: 0px;
+}
+
+/* CSS testo */
+#GUI_container p {
+    padding-left: 5px;
+    font-size: 12px;
+    margin: 0;
+}
+
+.GUI_titles {
+    font-style: italic;
+    background-color: #121736;
+    margin-bottom: 2px;
+}
+
+/* CSS bottoni */
+#GUI_container .btn {
+    padding: 0 2px;
+    margin: 2px 0;
+    font-size: 12px;
+}
+
+#heightmap_text {
+    padding-right: 4px;
+}
+
+/* CSS mappa */
+.halfDiv {
+    /*border: 1px red solid;*/
+    float: left;
+}
+
+#GUI_container #mapDiv img {
+    height: 100px;
+    margin: 4px;
+    border: 1px solid #12fcfc;
+}
+
+#GUI_container #mapDiv {
+    float: right;
+}
+
+.hideDiv {
+    display: none;
+}
+
+/* Loading Screen */
+#loadingScreen {
+    height: 100%;
+    width: 100%;
+    background-color: #122d49;
+    position: absolute;
+    top: 0;
+    color: #12fcfc;
+    z-index: 10000;    /* deve essere davanti a tutto */
+}
+
+#loadingText {
+    font-size: 3vw;
+    margin-top: 6vw;
+    font-family: Monospace;
+    font-style: absolute;
+}

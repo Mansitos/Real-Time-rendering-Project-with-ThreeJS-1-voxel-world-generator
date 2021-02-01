@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<title>Windmill</title>
+		<style>
+
+		body {
+			font-family: Monospace;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+
+	</style>
+		<script src="../../lib/three.js"></script>
+		<script src="../../lib/stats.min.js"></script>
+		<script src="../../lib/Coordinates.js"></script>
+		<script src="../../lib/OrbitControls.js"></script>
+		<script src="../../lib/OBJLoader.js"></script>
+
+	</head>
+	<body>
+
+		<script>
+
+		var scene, camera, renderer, controls, stats;
+
+		var clock = new THREE.Clock();
+		var delta, time;
+
+		var windmill_blades;
+
+		function Start() {
+
+			//////////////////////////
+            // OPERAZIONI INIZIALI //
+            ////////////////////////
+
+            // Creo una scena e ne setto il colore di background (sovrascrive il CSS)
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color( '#b1e0e2' );
+
+			// Creo una camera
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			// Creo un renderer
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor( 0xf0f0f0 );
+			document.body.appendChild( renderer.domElement );
+
+			// Setto la posizione della camera e le dico dove guardare (origine)
+			camera.position.set(3,4,6);
+			camera.lookAt( new THREE.Vector3(0,0,0));
+
+			///////////////
+			// WINDMILL //
+			/////////////
+
+			function loadObject(){
+				var loader = new THREE.ObjectLoader();
+
+				// Aggiungo l'oggetto "windmill_blades" del mulino
+				loader.load(
+					// resource URL
+					"../models/windmill_blades.json",
+
+					// onLoad callback
+					// Here the loaded data is assumed to be an object
+					function ( obj ) {
+						// Add the loaded object to the scene
+						windmill_blades = obj;
+						
+						scene.add( windmill_blades );
+
+						//windmill_blades.rotation.x = 45 * Math.PI/180;
+					},
+
+					// onProgress callback
+					function ( xhr ) {
+						console.log( (xhr.loaded / xhr.total * 100) + '% caricato' );
+					},
+
+					// onError callback
+					function ( err ) {
+						console.error( 'Errore di importazione' );
+					}
+				);
+			}
+
+			loadObject();
+
+			/////////////////////////////////////////////
+            // GESTIONE COORDINATE E MOVIMENTO CAMERA //
+            ///////////////////////////////////////////
+			Coordinates.drawAllAxes();
+
+			controls = new THREE.OrbitControls( camera );
+
+			////////////////////////////////
+            // GESTIONE MONITORAGGIO FPS //
+            //////////////////////////////
+			stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '1vw';
+            stats.domElement.style.left = '1vw';
+			document.body.appendChild( stats.domElement );
+		}
+
+		function Update() {
+			requestAnimationFrame( Update );
+			controls.update();
+			stats.update();
+
+			// Rotazione windmill_blades
+
+			delta = clock.getDelta();
+
+			// ruoto 10 gradi al secondo
+			windmill_blades.rotation.x += delta * 45 * Math.PI / 180;
+
+			// Tempo trascorso
+			//clock = Date.now() - start;
+
+			// windmill_blades.rotation.x += 0.5 * clock/1000 * Math.PI/180;
+
+			Render();
+		}
+
+		function Render() {
+			renderer.render(scene, camera);
+		}
+
+		Start();
+		Update();
+
+		</script>
+	</body>
+</html>

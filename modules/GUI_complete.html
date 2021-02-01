@@ -1,0 +1,704 @@
+<html>
+	<head>
+		<title>GUI completa</title>
+
+		<!-- Bootstrap CSS - Principalmente per customizzare la GUI -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+		<style>
+		
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+		
+		canvas { 
+			width: 100%; 
+			height: 100%;
+		}
+
+		/* Contenitore esterno */
+		#GUI_container {
+			width: 300px;
+			background-color: #122d49;
+			position: absolute;
+			right: 1vw;
+			top: 1vw;
+			border: 4px solid #121736;
+			color: #12fcfc;
+			border-top: 0px;
+		}
+
+		/* CSS testo */
+		#GUI_container p {
+			padding-left: 5px;
+			font-size: 12px;
+			margin: 0;
+		}
+
+		.GUI_titles {
+			font-style: italic;
+			background-color: #121736;
+			margin-bottom: 2px;
+		}
+
+		/* CSS bottoni */
+		#GUI_container .btn {
+			padding: 0 2px;
+			margin: 2px 0;
+			font-size: 12px;
+		}
+
+		/* CSS mappa */
+		.halfDiv {
+			/*border: 1px red solid;*/
+			float: left;
+		}
+
+		#GUI_container #mapDiv img {
+			height: 50px;
+			margin: 4px;
+			border: 1px solid #12fcfc;
+		}
+
+		#GUI_container #mapDiv {
+			float: right;
+		}
+
+	
+	</style>
+		<script src="../lib/three.min.js"></script>
+		<script src="../lib/stats.min.js"></script>
+		<script src="../lib/Coordinates.js"></script>
+		<script src="../lib/OrbitControls.js"></script>
+		
+	</head>
+	<body>
+		
+	<script>
+
+		// -------------------------- Scene Variables ------------------------------------------------------------------------------------
+		var scene, camera, renderer, controls, stats;
+		var normalized_heightmap,dim;
+
+		// -------------------------- Terrain Variables ----------------------------------------------------------------------------------
+		// top layer, mesh e geometry (example:top)
+		var top_layer_mesh, top_layer_geometry;
+		// bottom layer, mesh e geometry (example:rock,bottom)
+		var bottom_layer_mesh, bottom_layer_geometry;
+
+		var vegetation_layer_mesh,vegetation_layer_geometry; // not used? fix grass mesh merging
+
+		// -------------------------- Models ---------------------------------------------------------------------------------------------
+		var grass1, windmill, windmill_blades;
+
+		// -------------------------- Animations based on time ---------------------------------------------------------------------------
+		var clock = new THREE.Clock();
+		var delta, time;
+
+		// -------------------------- Parametro per qualita ombra ------------------------------------------------------------------------
+		var shadowQuality = 3;
+
+		// -------------------------- Background Music -----------------------------------------------------------------------------------
+		var background_music;
+
+		// -------- PARAMETRI DI CONFIGURAZIONE GENERAZIONE DEL TERRENO ------------------------------------------------------------------
+		var heightmap_img = "../textures/heightmaps/heightmap5.png";			// path dell'img per l'heightmap
+		var top_texture_path = "../textures/grass_top_reskin.png";	    	// texture del top_layer (cubi superficie)
+		var bottom_texture_path = "../textures/dirt_top.png";				// texture del bottom_layer (cubi "pareti"/"pendenze")
+		var altezza_max_terreno = 25;											// massima altezza del terreno, valore di normalizzazione dei valori heightmap
+		var grass_density = 0.1; 												// from 0 to 100 (esempio: 0.32 = 32%)
+		var sea_level = 0; 														// not used jet
+		var wireframe_view = false;												// cubi wireframe view ON/OFF
+		// -------------------------------------------------------------------------------------------------------------------------------
+
+		function Start() {
+
+			// ----> Scene Initialization Phase:
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color( '#b1e0e2' );
+			SetupRenderer();			// Setup the renderer
+			SetupCamera();				// Setup the camera
+			SetupStatsOSD();			// Setup the on screen stats display window
+			SetupLightSystem();			// Setup the lightSystem
+			SetupDirectionalLight();	// Setup the directional light
+			Coordinates.drawAllAxes(); 	// show axis on scene
+
+			// ----> START Code:
+			top_layer_geometry = new THREE.Geometry();
+			bottom_layer_geometry = new THREE.Geometry();
+			vegetation_layer_geometry = new THREE.Geometry(); // not used jet, should be used in future?
+
+
+			// ----> Loading Models Phase:
+			var loader = new THREE.ObjectLoader();
+			loader.load("../models/grass1.json",
+					// onLoad callback
+					function(obj){
+						// Add the loaded object to the scene
+						grass1 = obj; //new THREE.Mesh
+					},)
+
+			// Aggiungo la parte principale del mulino
+			loader.load(
+				// resource URL
+				"../models/windmill.json",
+				// onLoad callback
+				// Here the loaded data is assumed to be an object
+				function ( obj ) {
+					// Add the loaded object to the scene
+					windmill = obj;
+					windmill.position.y = 10;
+					windmill.position.x = 16;
+					windmill.position.z = -7;
+					
+					scene.add( windmill );
+				},
+				// onProgress callback
+				function ( xhr ) {
+					console.log( ('Mulino: ' + xhr.loaded / xhr.total * 100) + '% caricato' );
+				},
+				// onError callback
+				function ( err ) {
+					console.error( 'Errore di importazione' );
+				},
+			);
+
+			// Aggiungo le eliche del mulino
+			loader.load(
+				// resource URL
+				"../models/windmill_blades.json",
+				// onLoad callback
+				// Here the loaded data is assumed to be an object
+				function ( obj ) {
+					// Add the loaded object to the scene
+					windmill_blades = obj;
+					windmill_blades.position.y = 11.5 + 10;
+					windmill_blades.position.x = 1.5 + 16;
+					windmill_blades.position.z = -0.5 - 7;
+					
+					scene.add( windmill_blades );
+				},
+				// onProgress callback
+				function ( xhr ) {
+					console.log( ('Pale mulino: ' + xhr.loaded / xhr.total * 100) + '% caricato' );
+				},
+				// onError callback
+				function ( err ) {
+					console.error( 'Errore di importazione' );
+				},
+			);
+
+			
+			// ----> Terrain generation event trigger:
+			var img = new Image();
+			img.src = heightmap_img; // HeightMap SOURCE IMG (should be nxn)
+
+			img.onload = function () {	// Questo codice viene eseguito quando l'immagine nella riga precedente viene caricata. [NB: attenzione esecuzione concorrente]
+				var data = getHeightData(img);	// Ottengo i valori "heightData" dall'algoritmo getHeightData, relativi all'immagine appena caricata. the number is the scale
+				console.log("Generated heightMap:");console.log(data);	// Debug
+				// Chiamata all'algoritmo di generazione del terreno
+				GenerateTerrainData(data,altezza_max_terreno);	// input: data (from getHeightData output), layers->
+				// Chiamata di spawning del terreno appena generato
+				SpawnTerrain();
+				// Chiamata di generazione della vegetazione dopo aver generato e istanziato il mesh del terreno.
+				// GenerateVegetation();
+			}
+
+			// Aggiungo la musica di sottofondo
+			SetupMusic();
+		
+		}
+
+		// TODO: REWRITE COMMENTS WITH FACES/PLANES LOGIC
+
+		/*
+		 Input: heightmap data ricevuta dall'algoritmo "getHeightData" 
+		 normalizza i valori di altezza in un range che va da 0 a "layers"
+		 e poi spawna (tramite una chiamata a SpawnCube) un cubo in ciascun pixel dell'immagine, alle cordinate equivalenti che essi hanno nell'immagine, con un altezza pari al valore
+		 restituito da "getHeightData" per quel pixel.
+
+		 Esempio: pixel di cordinate x:3 e z:5 il cui valore restituito in heightmap è 2 -> spawno un cubo in pos  (3,2,5)
+
+				TODO 4: FIX NaN errors during holes fixing phase due to cubes positioned in the corner of the terrain
+
+		INPUT:
+		---> data ----> dati forniti da getHeightData
+		---> layers --> numero di layers (altezza max del terreno) voluti
+		---> offset --> read todo.
+
+		 Algorithm version 2
+		 
+		 */
+
+		function GenerateTerrainData(data,layers){
+
+			dim = Math.sqrt(data.length); // Calcolo della dimensione del terreno, le immagini heightmap sono del tipo nxn, la dimensione sara sqrt(nxn).
+			var offset = dim/2; // pari a metà della dimensione dell'immagine. Serve per spawnare i cubi con un'offset corretto rispetto al centro della scena, così da avere il terreno finale in pos 0,0,0.
+			console.log(" Input terrain height map is " + dim + " x " + dim);
+			var heightmap = data;
+
+			// Fase di normalizzazione da 0-255 a 0-layers
+			// esempio: layers=3 -> values from 0 to 85 are equal to 0, values from 86 to 170 are equal to 1, values from 171 to 255 are equal to 2
+			for(k = 0; k<heightmap.length;k++){
+				heightmap[k] = Math.floor(heightmap[k]/(255/layers));
+			}
+
+			// Store result in public var
+			normalized_heightmap = heightmap;
+
+			//Spawn cubes in the x,y,z pos from img where x,z: x & z cordinates of the pixel in the image, y: height from x,z value of the heightmap
+			for(i = 0; i<dim; i++){
+				for(j = 0; j<dim; j++){
+
+					center = heightmap[i*dim+j];
+					left = heightmap[i*dim+j-1];
+					right = heightmap[i*dim+j+1];
+					up = heightmap[(i-1)*dim+j];
+					down = heightmap[(i+1)*dim+j];
+
+					if(!(Number.isNaN(left))&& left<center){SpawnCube(i-offset,heightmap[i*dim+j],j-offset-0.5,"top_layer",0,-180);};
+					if(!(Number.isNaN(right))&& right<center){SpawnCube(i-offset,heightmap[i*dim+j],j-offset+0.5,"top_layer",0,0);};
+					if(!(Number.isNaN(up))&& up<center){SpawnCube(i-offset-0.5,heightmap[i*dim+j],j-offset,"top_layer",0,-90);};
+					if(!(Number.isNaN(down))&& down<center){SpawnCube(i-offset+0.5,heightmap[i*dim+j],j-offset,"top_layer",0,-270);};
+					
+					//top face
+					SpawnCube(i-offset,heightmap[i*dim+j]+0.5,j-offset,"top_layer",-90,0);
+
+				}
+			}
+
+			// Fase di Fix dei "buchi" relativi a elevati dislivelli tra due cubi adiacenti.
+			// VEDI SCHEMA SUL REPORT PROGETTO PER UNA DESCRIZIONE PIù ACCURATA. 
+			for(i = 0; i<dim; i++){
+				for(j = 0; j<dim; j++){
+
+					//for each cube find the height of near cubes....
+					center = heightmap[i*dim+j];
+					left = heightmap[i*dim+j-1];
+					right = heightmap[i*dim+j+1];
+					up = heightmap[(i-1)*dim+j];
+					down = heightmap[(i+1)*dim+j];
+
+					//...and pick the lowest one...
+					//min = Math.min(left,right,up,down);
+
+					if(!(Number.isNaN(left))){
+						if(left<center){
+							diff=center-left-1;
+							for(k=0;k<diff;k++){
+								SpawnCube(i-offset,center-k-1,j-offset-0.5,"bottom_layer",0,-180);	
+							}
+						}
+					}
+					if(!(Number.isNaN(right))){
+						if(right<center){
+							diff=center-right-1;
+							for(k=0;k<diff;k++){
+								SpawnCube(i-offset,center-k-1,j-offset+0.5,"bottom_layer",0,0);			
+							}
+						}
+					}
+					if(!(Number.isNaN(up))){
+						if(up<center){
+							diff=center-up-1;
+							for(k=0;k<diff;k++){
+								SpawnCube(i-offset-0.5,center-k-1,j-offset,"bottom_layer",0,-90);				
+							}
+						}
+					}
+					if(!(Number.isNaN(down))){
+						if(down<center){
+							diff=center-down-1;
+							for(k=0;k<diff;k++){
+								SpawnCube(i-offset+0.5,center-k-1,j-offset,"bottom_layer",0,-270);				
+							}
+						}
+					}
+				}
+			}
+		}
+
+		/*
+			SpawnTerrain() viene chiamato dopo GenerateTerrainData().
+			Prende i mesh del layer superficiale e quello sottostante (top_layer_mesh e bottom_layer_mesh --> Variabili globali)
+			e procede con la loro istanziazione nella scena, applicando texture, creando la geometria e il materiale appropriato.
+		*/
+		function SpawnTerrain(){
+				// Caricamento delle texture da utilizzare
+				var top_texture = THREE.ImageUtils.loadTexture(top_texture_path);
+				var bottom_texture = THREE.ImageUtils.loadTexture(bottom_texture_path);
+
+				// Creazione dei materiali
+				var top_material = new THREE.MeshPhongMaterial({color:'#39a621',wireframe:wireframe_view,map: top_texture});
+				var bottom_material = new THREE.MeshPhongMaterial({color:"white",wireframe:wireframe_view,map: bottom_texture});
+
+				// Operazione di merging dei vertici doppi (NON SEMBRA FUNZIONARE/AVER ALCUN EFFETTO ???)
+				top_layer_geometry.mergeVertices();
+				bottom_layer_geometry.mergeVertices();
+
+				// Istanziazione top_layer
+				top_layer_mesh = new THREE.Mesh(top_layer_geometry,top_material);
+				top_layer_mesh.castShadow=true;
+				top_layer_mesh.receiveShadow=true;
+				scene.add(top_layer_mesh);
+
+				// Istanziazione bottom_layer
+				bottom_layer_mesh = new THREE.Mesh(bottom_layer_geometry,bottom_material);
+				bottom_layer_mesh.castShadow=true;	
+				bottom_layer_mesh.receiveShadow=true;
+				scene.add(bottom_layer_mesh);
+		}
+
+		/* 
+		Spawn a standard cube on a given position x,y,z
+			color-> colore del cubo (white se non si vuole influenzare l'aspetto delle texture)
+			layer-> serve a specificare a che layer il cubo spawnato deve appartenere (bottom_layer o top_layer)
+		*/
+		function SpawnCube(x,y,z,layer,x_deg,y_deg){	
+			/*
+			var geometry = new THREE.BoxGeometry(1,1,1);	// Creazione della geometry, del mesh & del materiale per i cubi
+			var material = new THREE.MeshPhongMaterial( {
+				wireframe:false,
+				color: "white" });
+			var cube = new THREE.Mesh( geometry, material );
+
+			cube.castShadow=true;		// Cube Shadows
+			cube.receiveShadow=true;
+
+			cube.position.set(x,y,z);	// Cube position.set
+			*/
+
+			var geometry = new THREE.PlaneGeometry(1,1,1,1);
+			var material = new THREE.MeshPhongMaterial( {
+				wireframe:false,
+				color: "red" });
+			var face = new THREE.Mesh( geometry, material );
+			face.castShadow=true;
+			face.receiveShadow=true;
+			face.rotation.x = THREE.Math.degToRad(x_deg);
+			face.rotation.y = THREE.Math.degToRad(y_deg);
+			face.position.set(x,y,z);
+
+			// In questa fase il mesh del cubo viene aggiunto (merging) alla mesh del suo layer di appartenenza.
+			if(layer == "top_layer"){
+				top_layer_geometry.mergeMesh(face);	
+
+			}else if(layer == "bottom_layer"){
+				//console.log("added bottom");
+				bottom_layer_geometry.mergeMesh(face);
+			}
+		}
+
+		// return array with height data from img (0 to 255),
+		// taken from: http://danni-three.blogspot.it/2013/09/threejs-heightmaps.html
+
+		function getHeightData(img,scale) {
+		if (scale == undefined) scale=1;
+
+			var canvas = document.createElement( 'canvas' );
+			canvas.width = img.width;
+			canvas.height = img.height;
+			var context = canvas.getContext( '2d' );
+
+			var size = img.width * img.height;
+			console.log(size);
+			var data = new Float32Array( size );
+
+			context.drawImage(img,0,0);
+
+			for ( var i = 0; i < size; i ++ ) {
+				data[i] = 0
+			}
+
+			var imgd = context.getImageData(0, 0, img.width, img.height);
+			var pix = imgd.data;
+
+			var j=0;
+			for (var i = 0; i<pix.length; i +=4) {
+				var all = pix[i]+pix[i+1]+pix[i+2];  // all is in range 0 - 255*3
+				data[j++] = scale*all/3;   
+			}
+
+			return data;
+		}
+
+		function GenerateVegetation(){
+			GenerateGrass();
+		}
+
+		function GenerateGrass(){
+			var heightmap = normalized_heightmap;
+			var grass_quantity = heightmap.length * grass_density;
+			console.log("grass quantity: "+grass_quantity);
+			var min = 0;
+			var max = heightmap.length;
+			var positions_x = [];
+
+			for(i=0;i<grass_quantity;i++){
+				positions_x[i] = Math.floor(Math.random() * (max - min + 1) + min);
+			}
+
+			var positions = Array.from(new Set(positions_x));
+			
+			console.log(positions);
+
+			//Temporal grass model
+			var geometry = new THREE.BoxGeometry(0.25,0.25,0.25);	// Creazione della geometry, del mesh & del materiale per i cubi
+			var material = new THREE.MeshPhongMaterial( {
+				wireframe:false,
+				color: "red" });
+		
+			//-----------------
+
+			var x,z;
+
+			for(j=0;j<positions.length;j++){
+				var offset = dim/2;
+				var grass = new THREE.Mesh( geometry, material );
+				var index = positions[j];
+				x = Math.floor(index/dim);
+				z = index % dim;
+				y = normalized_heightmap[index];
+				var g = grass1.clone();
+				scene.add(g);
+				g.position.set(x-offset,y+0.9,z-offset);
+				g.updateMatrix;
+				vegetation_layer_geometry.merge(g);
+			}
+		}
+		
+		function Update() {
+			requestAnimationFrame( Update );
+			controls.update();  
+			stats.update();
+
+			RotateWindmillBlades();
+
+			Render();
+		}
+		
+		function Render() {
+			renderer.render(scene, camera);
+		}
+
+		function SetupLightSystem(){
+			hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1.75 );
+			hemiLight.color.setHSL( 0.6, 1, 0.6 );
+			hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+			hemiLight.position.set( 0, 500, 0 );
+			scene.add( hemiLight );
+		}
+
+		function SetupDirectionalLight() {
+			
+			// Se la luce è già presente nella scena, la rimuovo
+			if (typeof dirLight == 'object') {
+				scene.remove( dirLight );
+				console.log("Directional Light removed");
+			}
+
+			// Ora ci sono 2 possibilità
+			// 	- la setto per la prima volta
+			//  - ho cambiato il valore di ShadowQuality e la riaggiungo alla scena, con il valore aggiornato
+			dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
+			dirLight.color.setHSL( 0.1, 1, 0.95 );
+			dirLight.position.set( 3, 4, 3 );
+			dirLight.position.multiplyScalar( 50 );
+			scene.add( dirLight );
+			dirLight.castShadow = true;
+			dirLight.shadow.mapSize.width = 1024*shadowQuality;		// maggiore il valore, maggiore la definizione dell'ombra
+			dirLight.shadow.mapSize.height = 1024*shadowQuality;	// ma anche maggiore il carico computazionale (regolabile con GUI?)
+
+			// area in cui vengono visualizzate le ombre (ha senso che sia pari alla dimensione della heightmap)
+			var d = 100;
+			dirLight.shadow.camera.left = - d;
+			dirLight.shadow.camera.right = d;
+			dirLight.shadow.camera.top = d;
+			dirLight.shadow.camera.bottom = - d;
+
+			console.log("Directional Light added");
+		}
+
+		function SetupRenderer(){
+			renderer = new THREE.WebGLRenderer( {antialias: true, powerPreference:"high-performance"} );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor( 0xf0f0f0 );
+			document.body.appendChild( renderer.domElement );
+			renderer.gammaInput = true;
+			renderer.gammaOutput = true;
+			renderer.shadowMap.enabled = true;
+		}
+
+		function SetupCamera(){
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			camera.position.set(30,40,-60);
+			camera.lookAt( new THREE.Vector3(0,0,0));
+
+			// Orbit control setup
+			controls = new THREE.OrbitControls( camera );
+			controls.addEventListener( 'change', Render );
+		}
+
+		function SetupStatsOSD(){
+			stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '1vw';
+			stats.domElement.style.left = '1vw';
+			document.body.appendChild( stats.domElement );
+		}
+
+		function RotateWindmillBlades() {
+			// Rotazione windmill_blades (in base al tempo)
+			delta = clock.getDelta();
+
+			// controllo che il tipo sia oggetto e non undefined (la rotazione di un oggetto undefined porterebbe ad un errore!)
+			if (typeof windmill_blades == 'object') {
+				windmill_blades.rotation.z += 10 * delta * Math.PI / 180;
+			}
+		}
+
+		function SetupMusic() {
+
+			// create an AudioListener and add it to the camera
+			var listener = new THREE.AudioListener();
+			camera.add( listener );
+
+			// create a global audio source
+			background_music = new THREE.Audio( listener );
+
+			// load a background_music and set it as the Audio object's buffer
+			var audioLoader = new THREE.AudioLoader();
+			audioLoader.load( '../sounds/Relaxing_Background_Music.mp3', function( buffer ) {
+				background_music.setBuffer( buffer );
+				background_music.setLoop( true );
+				background_music.setVolume( 0.5 );
+				background_music.play();
+			});
+		}
+
+		// MAIN CODE GOES HERE //
+		
+		Start();
+		Update();
+			
+	</script>
+
+
+	<!-- NB: la GUI DEVE essere posizionata qui, in quanto richiede variabili dichiarate nel precedente script! -->
+		
+	<!-- GUI -->
+	<div id="GUI_container">
+		<div class="GUI_titles">
+			<p><b>Various Settings</b></p>
+		</div>
+		<p>Music 
+			<button class="btn btn-info active" id="musicOn" onclick="musicOn()">ON</button>
+			<button class="btn btn-info" id="musicOff" onclick="musicOff()">OFF</button>
+		</p>
+		<p>Wireframe 
+			<button class="btn btn-info" id="wireframeOn" onclick="wireframeOn()">ON</button>
+			<button class="btn btn-info active" id="wireframeOff" onclick="wireframeOff()">OFF</button>
+		</p>
+		<p>Shadow Quality
+			<button class="btn btn-info" onclick="worseShadow()">-</button>
+			<span id="shadowQuality"></span>
+			<button class="btn btn-info" onclick="betterShadow()">+</button>
+		</p>
+		<div class="GUI_titles">
+			<p><b>Various Info</b></p>
+		</div>
+		<div class="halfDiv">
+			<p>Number of vertices: <span id="verticesNumber"></span></p>
+			<p>Number of cubes: <span id="cubesNumber"></span></p>
+			<p>Map dimension: <span id="mapDim"></span></p>
+			<p>Terrain generation time: <span id="terrTime"></span></p>
+		</div><!--
+		--><div class="halfDiv" id="mapDiv">
+			<img id="mapImg" src="" alt="heightmap missing">
+		</div>
+	</div>
+			
+	<!-- Script per la gestione delle funzioni della GUI -->
+	<script>
+
+		// aggiungo i vari valori alla GUI
+		document.getElementById('mapImg').src = heightmap_img;
+		document.getElementById('shadowQuality').innerHTML = shadowQuality;
+		document.getElementById('verticesNumber').innerHTML = faces;
+		document.getElementById('cubesNumber').innerHTML = cubes;
+		document.getElementById('mapDim').innerHTML = dim + ' x ' + dim;
+		document.getElementById('terrTime').innerHTML = time_to_render;
+
+		function musicOn() {
+			// la musica riprende
+			background_music.play();
+			// aggiorno la visualizzazione dei button
+			var buttonOff = document.getElementById("musicOff");
+			buttonOff.classList.remove("active");
+			var buttonOn = document.getElementById("musicOn");
+			buttonOn.classList.add("active");
+			console.log("Music ON")
+		}
+		function musicOff() {
+			// la musica si ferma
+			background_music.pause();
+			// aggiorno la visualizzazione dei button
+			var buttonOff = document.getElementById("musicOff");
+			buttonOff.classList.add("active");
+			var buttonOn = document.getElementById("musicOn");
+			buttonOn.classList.remove("active");
+			console.log("Music OFF")
+		}
+
+		function wireframeOn() {
+			// logica algoritmo --> TODO: Mansi
+			
+			// aggiorno la visualizzazione dei button
+			var buttonOff = document.getElementById("wireframeOff");
+			buttonOff.classList.remove("active");
+			var buttonOn = document.getElementById("wireframeOn");
+			buttonOn.classList.add("active");
+			console.log("Wireframe ON")
+		}
+		function wireframeOff() {
+			// logica algoritmo --> TODO: Mansi
+			
+			// aggiorno la visualizzazione dei button
+			var buttonOff = document.getElementById("wireframeOff");
+			buttonOff.classList.add("active");
+			var buttonOn = document.getElementById("wireframeOn");
+			buttonOn.classList.remove("active");
+			console.log("Wireframe OFF")
+		}
+		
+		function worseShadow() {
+			if (shadowQuality > 1) {
+				shadowQuality--;
+
+				// Ricalcolo dell'ombra
+				SetupDirectionalLight();
+			
+				// Aggiorno il valore nella GUI
+				document.getElementById('shadowQuality').innerHTML = shadowQuality;
+			}
+		}
+		function betterShadow() {
+			if (shadowQuality < 5) {
+				shadowQuality++;
+				
+				// Ricalcolo dell'ombra
+				SetupDirectionalLight();
+
+				// Aggiorno il valore nella GUI
+				document.getElementById('shadowQuality').innerHTML = shadowQuality;
+			}
+		}
+	</script>
+
+	<!-- End of GUI -->
+		
+	</body>
+</html>

@@ -1,0 +1,124 @@
+{
+	"metadata": {
+		"version": 4.5,
+		"type": "Object",
+		"generator": "Object3D.toJSON"
+	},
+	"geometries": [
+		{
+			"uuid": "715A6934-5C48-4CD2-B960-B0FB6B62BA1C",
+			"type": "PlaneBufferGeometry",
+			"width": 1,
+			"height": 1,
+			"widthSegments": 1,
+			"heightSegments": 1
+		}],
+	"materials": [
+		{
+			"uuid": "8CD6A5A1-11F9-4135-A482-C8A66FA41BAB",
+			"type": "MeshStandardMaterial",
+			"color": 16777215,
+			"roughness": 0.5,
+			"metalness": 0.5,
+			"emissive": 0,
+			"map": "B5BC99E9-175B-4A7C-8484-0097398E7EF6",
+			"envMap": "1132C611-34CE-43AA-BB50-6EA573EE3536",
+			"refractionRatio": 0.98,
+			"envMapIntensity": 1,
+			"side": 2,
+			"transparent": true,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680,
+			"alphaTest": 0.25
+		}],
+	"textures": [
+		{
+			"uuid": "B5BC99E9-175B-4A7C-8484-0097398E7EF6",
+			"name": "",
+			"mapping": 300,
+			"repeat": [1,1],
+			"offset": [0,0],
+			"center": [0,0],
+			"rotation": 0,
+			"wrap": [1001,1001],
+			"format": 1023,
+			"type": 1009,
+			"encoding": 3001,
+			"minFilter": 1008,
+			"magFilter": 1006,
+			"anisotropy": 1,
+			"flipY": true,
+			"premultiplyAlpha": false,
+			"unpackAlignment": 4,
+			"image": "D3899088-6CD1-45C8-B139-F6B8A25DEBA1"
+		},
+		{
+			"uuid": "1132C611-34CE-43AA-BB50-6EA573EE3536",
+			"name": "",
+			"mapping": 305,
+			"repeat": [1,1],
+			"offset": [0,0],
+			"center": [0,0],
+			"rotation": 0,
+			"wrap": [1001,1001],
+			"format": 1023,
+			"type": 1009,
+			"encoding": 3001,
+			"minFilter": 1008,
+			"magFilter": 1006,
+			"anisotropy": 1,
+			"flipY": true,
+			"premultiplyAlpha": false,
+			"unpackAlignment": 4,
+			"image": "EFB7686B-9E9B-4692-A652-C2CA9DE90496"
+		}],
+	"images": [
+		{
+			"uuid": "D3899088-6CD1-45C8-B139-F6B8A25DEBA1",
+			"url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAE6klEQVR4Xu1YPYhcVRg9995xB3dNBKOlYKONpLCyMCIEtJBgo2sEs1qohSaFQpp0kyaEkCZG3VUQTbEpVlCzBrcIuHGJgcWf6KJCbGxsxKCwcXfeu79yvjdvU6nNm8fAu7MMM+/NzHvfOd8557t3FTr+UB3Hj0xAVkDHGcgW6LgAcghmC2QLdJyBbIGOCyBPgWyBbIGOM5At0HEB5CmQLZAt0HEGsgU6LoA8BbIFsgU6zkC2QMcFkKdAtkC2QMcZyBbouADyFMgWyBZoiYH1cyf2GN1bmjJpf/RevKeMQQweMUSEFOGdRxHj3j9+n/rl2cHAtlHa2C2wfu7EA7f3p64jeEBpJG+RUhJsSSl4axGVQvABzjn4GOG9R2kdNou/7jw0WNwcJxFjI+CbdwfTvZn+ltZGuh2DQ0oRwZEAIHgvwK21Aj4kwKeEECKcDyhJTIrY2ireePn04hkFVKw1/BgLAatLb9+xx2/dVCohugo4pS5AY0QIAc57hJik2wRMAnjO+oDI9y7ABVeR4QI2737QDAaD2DD+8YzBH86fSpR8imEE3AlQAo4pwQkBQc5ZF5AUUJZOzosCmAlCVPW6XVjYqFcG73/y5MQTsDo/uO+uXf1fo3cI3sGVJQISymGBpE3VeZIgnq9Isd7Dk5AQ5Wmdg9JaCGAmWOeFhP7M1D2D9z670SQJjVvg2w+Pp0hJBw9nrQQbdVuWtvI5AVqHAMq8IoPHBErAlD9DUhRAi4xUMSwdgjJrp8+vPDbRBFydP5Yoc5G3pYedgBagrvZ7BZoACZSAxRIhiic5HUgOSYmRoRhROi/Ptz6+3GjTGr0YO7P65tF0a5wFAc2RBoIahSCPq6DjaISQQPCRhIQo53jMR22DwjqU1mP+wlqjNTd6MRZ88eThJOCY7qOuSZeVQlGUSFCjKcDkT7IIYqfrQmpV8DdCgI/wibbhhPBYWL7SaM2NXowFLx1/JbGTLJYdp7zZcb5XIxVoXamBT1FASOAf5c4TVA2/W9kDO1OD1pr/dMIV8MGxFxKBsJOc5Vy9MMgkBxhoMcFoLQRR3iSIiuE6p5Z9DVrOMk/qsRgTFibdAmdffy4lhtdouVunORdDDDMe73hdYCfpMkniK39nNLtfLfx4TEXwNxwQCxfW9ERPgZNHnt/rhpsbRhuBJxNB5nsAK6fImQ2Ex8/qfQHx8rinVQU2AbVVSu8pBfR377737OLKbxNNwNLsrPlxetszBLVSiOxwBHzk5Gfiy6AXsHzP7/Azo241ludlHIo6kuQBbus/9M5Hl75vEjyv1XgI8qJH5+ZmeurPa7Yo76/3MATBUUYytOaUqPKhZ7RkQM9UwdgzRtTCnKBaetrsm/a7Nk4tL99sGvzYCPivQp949OFEMgiS3mYwVsvgamJc++n6WJrybzW1ejMWcWD/I2J7ApZ9wWjtL2MSwNcbP7daU6s3IwEHDzwuS+WdLXEIKMpqt0hlfLn+Xas1tXozEvDSwacSo0c2Sz7I6lDW+dZKXFy6st5qTW3drI74dOTF2cgxaIzB39tDDIclrHeyOWLwXfyi2aXu/wVnWwTs1PHqoacTQ08b7g2s7P1pgaIsxQKfr37Vak2t3owsHJ57hssfWf9T9lvbBULk/wCd7AVWLl9ttaZWb0YCXiMBXAjFiKK08iQRHIl8tK2AfwDpg+9uClnQaQAAAABJRU5ErkJggg=="
+		},
+		{
+			"uuid": "EFB7686B-9E9B-4692-A652-C2CA9DE90496",
+			"url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAE6klEQVR4Xu1YPYhcVRg9995xB3dNBKOlYKONpLCyMCIEtJBgo2sEs1qohSaFQpp0kyaEkCZG3VUQTbEpVlCzBrcIuHGJgcWf6KJCbGxsxKCwcXfeu79yvjdvU6nNm8fAu7MMM+/NzHvfOd8557t3FTr+UB3Hj0xAVkDHGcgW6LgAcghmC2QLdJyBbIGOCyBPgWyBbIGOM5At0HEB5CmQLZAt0HEGsgU6LoA8BbIFsgU6zkC2QMcFkKdAtkC2QMcZyBbouADyFMgWyBZoiYH1cyf2GN1bmjJpf/RevKeMQQweMUSEFOGdRxHj3j9+n/rl2cHAtlHa2C2wfu7EA7f3p64jeEBpJG+RUhJsSSl4axGVQvABzjn4GOG9R2kdNou/7jw0WNwcJxFjI+CbdwfTvZn+ltZGuh2DQ0oRwZEAIHgvwK21Aj4kwKeEECKcDyhJTIrY2ireePn04hkFVKw1/BgLAatLb9+xx2/dVCohugo4pS5AY0QIAc57hJik2wRMAnjO+oDI9y7ABVeR4QI2737QDAaD2DD+8YzBH86fSpR8imEE3AlQAo4pwQkBQc5ZF5AUUJZOzosCmAlCVPW6XVjYqFcG73/y5MQTsDo/uO+uXf1fo3cI3sGVJQISymGBpE3VeZIgnq9Isd7Dk5AQ5Wmdg9JaCGAmWOeFhP7M1D2D9z670SQJjVvg2w+Pp0hJBw9nrQQbdVuWtvI5AVqHAMq8IoPHBErAlD9DUhRAi4xUMSwdgjJrp8+vPDbRBFydP5Yoc5G3pYedgBagrvZ7BZoACZSAxRIhiic5HUgOSYmRoRhROi/Ptz6+3GjTGr0YO7P65tF0a5wFAc2RBoIahSCPq6DjaISQQPCRhIQo53jMR22DwjqU1mP+wlqjNTd6MRZ88eThJOCY7qOuSZeVQlGUSFCjKcDkT7IIYqfrQmpV8DdCgI/wibbhhPBYWL7SaM2NXowFLx1/JbGTLJYdp7zZcb5XIxVoXamBT1FASOAf5c4TVA2/W9kDO1OD1pr/dMIV8MGxFxKBsJOc5Vy9MMgkBxhoMcFoLQRR3iSIiuE6p5Z9DVrOMk/qsRgTFibdAmdffy4lhtdouVunORdDDDMe73hdYCfpMkniK39nNLtfLfx4TEXwNxwQCxfW9ERPgZNHnt/rhpsbRhuBJxNB5nsAK6fImQ2Ex8/qfQHx8rinVQU2AbVVSu8pBfR377737OLKbxNNwNLsrPlxetszBLVSiOxwBHzk5Gfiy6AXsHzP7/Azo241ludlHIo6kuQBbus/9M5Hl75vEjyv1XgI8qJH5+ZmeurPa7Yo76/3MATBUUYytOaUqPKhZ7RkQM9UwdgzRtTCnKBaetrsm/a7Nk4tL99sGvzYCPivQp949OFEMgiS3mYwVsvgamJc++n6WJrybzW1ejMWcWD/I2J7ApZ9wWjtL2MSwNcbP7daU6s3IwEHDzwuS+WdLXEIKMpqt0hlfLn+Xas1tXozEvDSwacSo0c2Sz7I6lDW+dZKXFy6st5qTW3drI74dOTF2cgxaIzB39tDDIclrHeyOWLwXfyi2aXu/wVnWwTs1PHqoacTQ08b7g2s7P1pgaIsxQKfr37Vak2t3owsHJ57hssfWf9T9lvbBULk/wCd7AVWLl9ttaZWb0YCXiMBXAjFiKK08iQRHIl8tK2AfwDpg+9uClnQaQAAAABJRU5ErkJggg=="
+		}],
+	"object": {
+		"uuid": "89A6939A-B087-4D11-A300-9BF99B43A626",
+		"type": "Group",
+		"name": "Group",
+		"castShadow": true,
+		"layers": 1,
+		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+		"children": [
+			{
+				"uuid": "BD902153-1A2D-4975-9BB9-92ABAC4BA108",
+				"type": "Mesh",
+				"name": "Plane",
+				"castShadow": true,
+				"receiveShadow": true,
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+				"geometry": "715A6934-5C48-4CD2-B960-B0FB6B62BA1C",
+				"material": "8CD6A5A1-11F9-4135-A482-C8A66FA41BAB"
+			},
+			{
+				"uuid": "6552B44A-CD62-4843-B5C8-181371B934E9",
+				"type": "Mesh",
+				"name": "Plane",
+				"castShadow": true,
+				"receiveShadow": true,
+				"layers": 1,
+				"matrix": [0,0,-1,0,0,1,0,0,1,0,0,0,0,0,0,1],
+				"geometry": "715A6934-5C48-4CD2-B960-B0FB6B62BA1C",
+				"material": "8CD6A5A1-11F9-4135-A482-C8A66FA41BAB"
+			}]
+	}
+}

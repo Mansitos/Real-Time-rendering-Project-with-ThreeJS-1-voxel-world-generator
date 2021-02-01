@@ -1,0 +1,30 @@
+<div id="GUI_container">
+    <div class="GUI_titles">
+        <p><b>Various Settings</b></p>
+    </div>
+    <p>Music 
+        <button class="btn btn-info active" id="musicOn" onclick="musicOn()">ON</button>
+        <button class="btn btn-info" id="musicOff" onclick="musicOff()">OFF</button>
+    </p>
+    <p>Wireframe 
+        <button class="btn btn-info" id="wireframeOn" onclick="wireframeOn()">ON</button>
+        <button class="btn btn-info active" id="wireframeOff" onclick="wireframeOff()">OFF</button>
+    </p>
+    <p>Shadow Quality
+        <button class="btn btn-info" onclick="worseShadow()">-</button>
+        <span id="shadowQuality"></span>
+        <button class="btn btn-info" onclick="betterShadow()">+</button>
+    </p>
+    <div class="GUI_titles">
+        <p><b>Various Info</b></p>
+    </div>
+    <div class="halfDiv">
+        <p>Number of vertices: <span id="verticesNumber"></span></p>
+        <p>Number of cubes: <span id="cubesNumber"></span></p>
+        <p>Map dimension: <span id="mapDim"></span></p>
+        <p>Terrain generation time: <span id="terrTime"></span></p>
+    </div><!--
+    --><div class="halfDiv" id="mapDiv">
+        <img id="mapImg" src="" alt="heightmap missing">
+    </div>
+</div>
