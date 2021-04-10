@@ -1,4 +1,4 @@
-### Questa repo è un backup del primo progetto per il corso di INTERACTIVE 3D GRAPHICS (università degli scorsi di Udine)
+### Questa repo è un backup del primo progetto per il corso di INTERACTIVE 3D GRAPHICS (università degli studi di Udine)
 - collaboratore: Daniele Passabì
 
 # Voxel Terrain Generation
