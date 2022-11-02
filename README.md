@@ -1,5 +1,14 @@
+In this repo you can find a real-time web project developed via the Three.js library. This project has been developed for the university "Interactive 3D graphics" course. The course is about basic principles of real-time-rendering.
+
+The developed tool is a voxel terrain generator. Given an input heatmap image a set of (customizable) parameters, a 3D voxel terrain is being generated.
+
+The README is in italian language, as required by the course assignement, sorry for that.
+---
+
 ### Questa repo è un backup del primo progetto per il corso di INTERACTIVE 3D GRAPHICS (università degli studi di Udine)
 - collaboratore: Daniele Passabì
+
+---
 
 # Voxel Terrain Generation
 
